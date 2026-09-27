@@ -38,7 +38,7 @@ export interface AuthResult {
 export class AuthService {
   static async register(
     input: RegisterInput,
-    clientInfo: { userAgent?: string; ip?: string }
+    clientInfo?: { userAgent?: string; ip?: string }
   ): Promise<AuthResult> {
     const existing = await prisma.user.findUnique({
       where: { email: input.email },
@@ -86,8 +86,8 @@ export class AuthService {
           userId: user.id,
           tokenHash,
           expiresAt,
-          userAgent: clientInfo.userAgent,
-          ip: clientInfo.ip,
+          userAgent: clientInfo?.userAgent,
+          ip: clientInfo?.ip,
           lastUsedAt: new Date(),
         },
       });
@@ -98,7 +98,7 @@ export class AuthService {
           action: 'AUTH_REGISTER',
           entityType: 'User',
           entityId: user.id,
-          ip: clientInfo.ip,
+          ip: clientInfo?.ip,
         },
         tx
       );
@@ -138,7 +138,7 @@ export class AuthService {
 
   static async login(
     input: LoginInput,
-    clientInfo: { userAgent?: string; ip?: string }
+    clientInfo?: { userAgent?: string; ip?: string }
   ): Promise<AuthResult> {
     const user = await prisma.user.findFirst({
       where: {
@@ -178,8 +178,8 @@ export class AuthService {
           userId: user.id,
           tokenHash,
           expiresAt,
-          userAgent: clientInfo.userAgent,
-          ip: clientInfo.ip,
+          userAgent: clientInfo?.userAgent,
+          ip: clientInfo?.ip,
           lastUsedAt: new Date(),
         },
       });
@@ -195,7 +195,7 @@ export class AuthService {
           action: 'AUTH_LOGIN',
           entityType: 'User',
           entityId: user.id,
-          ip: clientInfo.ip,
+          ip: clientInfo?.ip,
         },
         tx
       );
@@ -235,7 +235,7 @@ export class AuthService {
 
   static async refresh(
     rawRefreshToken: string,
-    clientInfo: { userAgent?: string; ip?: string }
+    clientInfo?: { userAgent?: string; ip?: string }
   ): Promise<AuthResult> {
     if (!rawRefreshToken) {
       throw AppError.unauthorized('Refresh token is required');
@@ -275,7 +275,7 @@ export class AuthService {
         action: 'AUTH_REUSE_DETECTED',
         entityType: 'RefreshToken',
         entityId: existingToken.id,
-        ip: clientInfo.ip,
+        ip: clientInfo?.ip,
       });
 
       throw AppError.unauthorized('Token reuse detected. All sessions revoked for security.');
@@ -306,8 +306,8 @@ export class AuthService {
           userId: user.id,
           tokenHash: newTokenHash,
           expiresAt: newExpiresAt,
-          userAgent: clientInfo.userAgent,
-          ip: clientInfo.ip,
+          userAgent: clientInfo?.userAgent,
+          ip: clientInfo?.ip,
           lastUsedAt: new Date(),
         },
       });

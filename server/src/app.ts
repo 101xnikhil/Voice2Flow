@@ -10,7 +10,7 @@ import { errorHandler } from './middleware/errorHandler.js';
 import { globalRateLimiter } from './middleware/rateLimit.js';
 import { AppError } from './lib/errors.js';
 import { healthRouter } from './modules/health/routes.js';
-import authRouter from './modules/auth/routes.js';
+import { authRouter } from './modules/auth/routes.js';
 import userRouter from './modules/users/routes.js';
 import taskRouter from './modules/tasks/routes.js';
 import { API_PREFIX } from '@voice2flow/shared';

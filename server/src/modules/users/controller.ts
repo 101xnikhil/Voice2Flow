@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { UserService } from './service.js';
 import { hashToken } from '../../lib/jwt.js';
-import { COOKIE_REFRESH_TOKEN } from '@voice2flow/shared';
+import { REFRESH_COOKIE_NAME } from '@voice2flow/shared';
 
 export class UserController {
   static async getMe(req: Request, res: Response, next: NextFunction): Promise<void> {
@@ -66,7 +66,7 @@ export class UserController {
 
   static async getSessions(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const rawRefreshToken = req.cookies?.[COOKIE_REFRESH_TOKEN];
+      const rawRefreshToken = req.cookies?.[REFRESH_COOKIE_NAME];
       const tokenHash = rawRefreshToken ? hashToken(rawRefreshToken) : undefined;
       const sessions = await UserService.getSessions(req.user!.id, tokenHash);
       res.json({
@@ -80,7 +80,7 @@ export class UserController {
 
   static async revokeSession(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      await UserService.revokeSession(req.user!.id, req.params.id);
+      await UserService.revokeSession(req.user!.id, req.params.id as string);
       res.json({
         success: true,
         data: { message: 'Session revoked successfully' },
@@ -93,7 +93,7 @@ export class UserController {
   static async deleteAccount(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       await UserService.deleteAccount(req.user!.id, req.body);
-      res.clearCookie(COOKIE_REFRESH_TOKEN, {
+      res.clearCookie(REFRESH_COOKIE_NAME, {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'strict',

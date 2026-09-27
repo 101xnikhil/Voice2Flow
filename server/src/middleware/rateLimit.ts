@@ -17,6 +17,7 @@ export const authRateLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 10,
   skip: () => process.env.NODE_ENV === 'test',
+  validate: { ip: false },
   keyGenerator: (req: Request) => {
     const ip = req.ip || req.socket.remoteAddress || 'unknown';
     const email = req.body && typeof req.body.email === 'string' ? req.body.email.toLowerCase() : '';

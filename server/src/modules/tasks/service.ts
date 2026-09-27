@@ -8,16 +8,16 @@ import {
   BulkTaskActionInput,
   TaskDTO,
 } from '@voice2flow/shared';
-import { Prisma } from '@prisma/client';
+import { Prisma, Category, Priority, TaskStatus, Source } from '@prisma/client';
 
 function toTaskDTO(task: {
   id: string;
   userId: string;
   title: string;
   description: string | null;
-  category: any;
-  priority: any;
-  status: any;
+  category: Category;
+  priority: Priority;
+  status: TaskStatus;
   dueAt: Date | null;
   isAllDay: boolean;
   estimatedMinutes: number | null;
@@ -27,7 +27,7 @@ function toTaskDTO(task: {
   recurrenceParentId: string | null;
   completedAt: Date | null;
   deletedAt: Date | null;
-  source: any;
+  source: Source;
   executionId: string | null;
   originKey: string | null;
   createdAt: Date;
@@ -85,15 +85,15 @@ export class TaskService {
 
     // Explicit status filter (overrides tab status if specified)
     if (filters.status && filters.tab !== 'trash') {
-      where.status = filters.status as any;
+      where.status = filters.status as TaskStatus;
     }
 
     if (filters.category) {
-      where.category = filters.category as any;
+      where.category = filters.category as Category;
     }
 
     if (filters.priority) {
-      where.priority = filters.priority as any;
+      where.priority = filters.priority as Priority;
     }
 
     if (filters.dueFrom || filters.dueTo) {
@@ -151,7 +151,7 @@ export class TaskService {
 
     let nextCursor: string | null = null;
     if (items.length > limit) {
-      const nextItem = items.pop();
+      items.pop();
       nextCursor = items[items.length - 1]?.id || null;
     }
 
@@ -168,8 +168,8 @@ export class TaskService {
         userId,
         title: input.title,
         description: input.description || null,
-        category: (input.category as any) || 'OTHER',
-        priority: (input.priority as any) || 'MEDIUM',
+        category: (input.category as Category) || Category.OTHER,
+        priority: (input.priority as Priority) || Priority.MEDIUM,
         status: 'PENDING',
         dueAt: input.dueAt ? new Date(input.dueAt) : null,
         isAllDay: input.isAllDay ?? false,
@@ -224,8 +224,8 @@ export class TaskService {
 
     if (input.title !== undefined) updateData.title = input.title;
     if (input.description !== undefined) updateData.description = input.description;
-    if (input.category !== undefined) updateData.category = input.category as any;
-    if (input.priority !== undefined) updateData.priority = input.priority as any;
+    if (input.category !== undefined) updateData.category = input.category as Category;
+    if (input.priority !== undefined) updateData.priority = input.priority as Priority;
     if (input.dueAt !== undefined) {
       updateData.dueAt = input.dueAt ? new Date(input.dueAt) : null;
     }
@@ -236,7 +236,7 @@ export class TaskService {
     if (input.recurrenceRule !== undefined) updateData.recurrenceRule = input.recurrenceRule;
 
     if (input.status !== undefined) {
-      updateData.status = input.status as any;
+      updateData.status = input.status as TaskStatus;
       if (input.status === 'COMPLETED' && !existing.completedAt) {
         updateData.completedAt = new Date();
       } else if (input.status !== 'COMPLETED' && existing.completedAt) {
@@ -452,7 +452,7 @@ export class TaskService {
         }
         const res = await prisma.task.updateMany({
           where: { id: { in: validIds } },
-          data: { priority: input.priority as any },
+          data: { priority: input.priority as Priority },
         });
         count = res.count;
         break;
@@ -463,7 +463,7 @@ export class TaskService {
         }
         const res = await prisma.task.updateMany({
           where: { id: { in: validIds } },
-          data: { category: input.category as any },
+          data: { category: input.category as Category },
         });
         count = res.count;
         break;
@@ -476,7 +476,8 @@ export class TaskService {
       userId,
       action: `TASK_BULK_${action.toUpperCase()}`,
       entityType: 'Task',
-      metadata: { count, taskIds: validIds },
+      entityId: validIds[0] || 'bulk',
+      after: { count, taskIds: validIds },
     });
 
     return { count, action };

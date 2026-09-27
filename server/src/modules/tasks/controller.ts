@@ -1,10 +1,14 @@
 import { Request, Response, NextFunction } from 'express';
 import { TaskService } from './service.js';
+import { TaskQueryFilters } from '@voice2flow/shared';
 
 export class TaskController {
   static async listTasks(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const result = await TaskService.listTasks(req.user!.id, req.query as any);
+      const result = await TaskService.listTasks(
+        req.user!.id,
+        req.query as unknown as TaskQueryFilters
+      );
       res.json({
         success: true,
         data: result.tasks,
@@ -32,7 +36,7 @@ export class TaskController {
 
   static async getTaskById(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const task = await TaskService.getTaskById(req.user!.id, req.params.id);
+      const task = await TaskService.getTaskById(req.user!.id, req.params.id as string);
       res.json({
         success: true,
         data: task,
@@ -44,7 +48,7 @@ export class TaskController {
 
   static async updateTask(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const task = await TaskService.updateTask(req.user!.id, req.params.id, req.body);
+      const task = await TaskService.updateTask(req.user!.id, req.params.id as string, req.body);
       res.json({
         success: true,
         data: task,
@@ -56,7 +60,7 @@ export class TaskController {
 
   static async softDeleteTask(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const task = await TaskService.softDeleteTask(req.user!.id, req.params.id);
+      const task = await TaskService.softDeleteTask(req.user!.id, req.params.id as string);
       res.json({
         success: true,
         data: task,
@@ -68,7 +72,7 @@ export class TaskController {
 
   static async completeTask(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const task = await TaskService.completeTask(req.user!.id, req.params.id);
+      const task = await TaskService.completeTask(req.user!.id, req.params.id as string);
       res.json({
         success: true,
         data: task,
@@ -80,7 +84,7 @@ export class TaskController {
 
   static async reopenTask(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const task = await TaskService.reopenTask(req.user!.id, req.params.id);
+      const task = await TaskService.reopenTask(req.user!.id, req.params.id as string);
       res.json({
         success: true,
         data: task,
@@ -92,7 +96,7 @@ export class TaskController {
 
   static async restoreTask(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const task = await TaskService.restoreTask(req.user!.id, req.params.id);
+      const task = await TaskService.restoreTask(req.user!.id, req.params.id as string);
       res.json({
         success: true,
         data: task,
@@ -104,7 +108,7 @@ export class TaskController {
 
   static async permanentDeleteTask(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      await TaskService.permanentDeleteTask(req.user!.id, req.params.id);
+      await TaskService.permanentDeleteTask(req.user!.id, req.params.id as string);
       res.json({
         success: true,
         data: { message: 'Task permanently deleted' },

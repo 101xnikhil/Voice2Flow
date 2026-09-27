@@ -34,6 +34,7 @@ export class AuthController {
       setRefreshCookie(res, result.refreshToken);
 
       res.status(201).json({
+        success: true,
         data: {
           user: result.user,
           settings: result.settings,
@@ -56,6 +57,7 @@ export class AuthController {
       setRefreshCookie(res, result.refreshToken);
 
       res.status(200).json({
+        success: true,
         data: {
           user: result.user,
           settings: result.settings,
@@ -79,6 +81,7 @@ export class AuthController {
       setRefreshCookie(res, result.refreshToken);
 
       res.status(200).json({
+        success: true,
         data: {
           user: result.user,
           settings: result.settings,
@@ -98,6 +101,7 @@ export class AuthController {
       clearRefreshCookie(res);
 
       res.status(200).json({
+        success: true,
         data: {
           message: 'Logged out successfully',
         },
@@ -112,6 +116,7 @@ export class AuthController {
     try {
       const result = await AuthService.me(req.userId!);
       res.status(200).json({
+        success: true,
         data: result,
       });
     } catch (err) {

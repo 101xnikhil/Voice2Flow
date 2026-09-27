@@ -5,6 +5,7 @@ interface UIState {
   theme: ThemeMode;
   resolvedTheme: 'light' | 'dark';
   setTheme: (theme: ThemeMode) => void;
+  initTheme: () => void;
 }
 
 const THEME_STORAGE_KEY = 'v2f_theme';
@@ -55,7 +56,7 @@ function applyThemeToDom(resolved: 'light' | 'dark') {
   }
 }
 
-export const useUIStore = create<UIState>((set) => {
+export const useUIStore = create<UIState>((set, get) => {
   const initialTheme = getInitialTheme();
   const initialResolved = resolveTheme(initialTheme);
   applyThemeToDom(initialResolved);
@@ -69,8 +70,15 @@ export const useUIStore = create<UIState>((set) => {
       applyThemeToDom(resolved);
       set({ theme, resolvedTheme: resolved });
     },
+    initTheme: () => {
+      const resolved = resolveTheme(get().theme);
+      applyThemeToDom(resolved);
+      set({ resolvedTheme: resolved });
+    },
   };
 });
+
+export const useThemeStore = useUIStore;
 
 // Listen for system theme changes when mode is 'system'
 if (typeof window !== 'undefined' && window.matchMedia) {
