@@ -9,6 +9,8 @@ import { AppShell } from './components/layout/AppShell.js';
 import { Login } from './pages/auth/Login.js';
 import { Register } from './pages/auth/Register.js';
 import { TasksPage } from './pages/tasks/TasksPage.js';
+import { VoicePage } from './pages/voice/VoicePage.js';
+import { HistoryPage } from './pages/history/HistoryPage.js';
 import { SettingsPage } from './pages/settings/SettingsPage.js';
 import { ProfilePage } from './pages/profile/ProfilePage.js';
 
@@ -50,9 +52,12 @@ export const App: React.FC = () => {
           >
             <Route index element={<Navigate to="/app/tasks" replace />} />
             <Route path="tasks" element={<TasksPage />} />
+            <Route path="voice" element={<VoicePage />} />
+            <Route path="history" element={<HistoryPage />} />
             <Route path="settings" element={<SettingsPage />} />
             <Route path="profile" element={<ProfilePage />} />
           </Route>
+
 
           {/* Root and Catch-all */}
           <Route path="/" element={<Navigate to="/app/tasks" replace />} />

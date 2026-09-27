@@ -13,6 +13,8 @@ import { healthRouter } from './modules/health/routes.js';
 import { authRouter } from './modules/auth/routes.js';
 import userRouter from './modules/users/routes.js';
 import taskRouter from './modules/tasks/routes.js';
+import commandRouter from './modules/commands/routes.js';
+import executionRouter from './modules/executions/routes.js';
 import { API_PREFIX } from '@voice2flow/shared';
 
 export function createApp(): Express {
@@ -69,8 +71,11 @@ export function createApp(): Express {
   apiRouter.use('/auth', authRouter);
   apiRouter.use('/users', userRouter);
   apiRouter.use('/tasks', taskRouter);
+  apiRouter.use('/commands', commandRouter);
+  apiRouter.use('/executions', executionRouter);
 
   app.use(API_PREFIX, apiRouter);
+
 
   // 404 Catch-all handler
   app.use((_req: Request, _res: Response, next: NextFunction) => {

@@ -29,3 +29,20 @@ export const authRateLimiter = rateLimit({
     next(AppError.rateLimited('Too many authentication attempts. Please try again in 15 minutes.'));
   },
 });
+
+export const commandRateLimiter = rateLimit({
+  windowMs: 60 * 1000, // 1 minute
+  max: 20,
+  skip: () => process.env.NODE_ENV === 'test',
+  keyGenerator: (req: Request) => {
+    const userReq = req as Request & { user?: { id: string } };
+    return userReq.user?.id || req.ip || req.socket.remoteAddress || 'unknown';
+  },
+
+  standardHeaders: true,
+  legacyHeaders: false,
+  handler: (_req: Request, _res: Response, next: NextFunction) => {
+    next(AppError.rateLimited('Command rate limit reached (20 requests per minute). Please slow down.'));
+  },
+});
+

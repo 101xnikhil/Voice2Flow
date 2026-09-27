@@ -90,3 +90,74 @@ export const ParsedCommandSchema = z.object({
   resolved: ResolvedDateSchema.optional(),
 });
 export type ParsedCommand = z.infer<typeof ParsedCommandSchema>;
+
+export const CommandRequestSchema = z.object({
+  text: z.string().trim().min(1, 'Command text is required').max(1000),
+  inputMode: z.enum(['VOICE', 'TEXT']).default('TEXT'),
+  sttConfidence: z.number().min(0).max(1).optional(),
+  locale: z.string().optional(),
+  sessionId: z.string().optional(),
+});
+export type CommandRequest = z.infer<typeof CommandRequestSchema>;
+
+export const CommandConfirmSchema = z.object({
+  overrides: z.record(z.unknown()).optional(),
+});
+export type CommandConfirm = z.infer<typeof CommandConfirmSchema>;
+
+export const CommandResolveSchema = z.object({
+  optionId: z.string().optional(),
+  answer: z.string().optional(),
+});
+export type CommandResolve = z.infer<typeof CommandResolveSchema>;
+
+export const ClarificationOptionSchema = z.object({
+  id: z.string(),
+  label: z.string(),
+});
+export type ClarificationOption = z.infer<typeof ClarificationOptionSchema>;
+
+export const CommandResponseExecutedSchema = z.object({
+  status: z.literal('EXECUTED'),
+  executionId: z.string(),
+  summary: z.string(),
+  result: z.unknown(),
+  steps: z.array(z.unknown()).optional(),
+});
+
+export const CommandResponseNeedsConfirmationSchema = z.object({
+  status: z.literal('NEEDS_CONFIRMATION'),
+  executionId: z.string(),
+  preview: z.unknown(),
+  confidence: z.number(),
+  assumptions: z.array(z.string()),
+  expiresAt: z.string(),
+});
+
+export const CommandResponseNeedsClarificationSchema = z.object({
+  status: z.literal('NEEDS_CLARIFICATION'),
+  executionId: z.string(),
+  sessionId: z.string().optional(),
+  question: z.string(),
+  options: z.array(ClarificationOptionSchema).optional(),
+  expectedSlot: z.string().optional(),
+});
+
+export const CommandResponseFailedSchema = z.object({
+  status: z.literal('FAILED'),
+  executionId: z.string().optional(),
+  error: z.object({
+    code: z.string(),
+    message: z.string(),
+    details: z.unknown().optional(),
+  }),
+});
+
+export const CommandResponseSchema = z.discriminatedUnion('status', [
+  CommandResponseExecutedSchema,
+  CommandResponseNeedsConfirmationSchema,
+  CommandResponseNeedsClarificationSchema,
+  CommandResponseFailedSchema,
+]);
+export type CommandResponse = z.infer<typeof CommandResponseSchema>;
+

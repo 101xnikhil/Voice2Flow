@@ -1,6 +1,14 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { CheckSquare, Settings, User as UserIcon, LogOut, Sparkles } from 'lucide-react';
+import {
+  CheckSquare,
+  Mic,
+  History,
+  Settings,
+  User as UserIcon,
+  LogOut,
+  Sparkles,
+} from 'lucide-react';
 import { useAuthStore } from '../../stores/auth.js';
 import { ThemeToggle } from '../ThemeToggle.js';
 import { clsx } from 'clsx';
@@ -10,9 +18,12 @@ export const Sidebar: React.FC = () => {
 
   const navItems = [
     { to: '/app/tasks', label: 'Tasks', icon: CheckSquare },
+    { to: '/app/voice', label: 'Voice & Commands', icon: Mic },
+    { to: '/app/history', label: 'History', icon: History },
     { to: '/app/settings', label: 'Settings', icon: Settings },
     { to: '/app/profile', label: 'Profile', icon: UserIcon },
   ];
+
 
   const getInitials = (name?: string) => {
     if (!name) return 'U';
