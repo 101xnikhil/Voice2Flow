@@ -1,6 +1,7 @@
 import * as chrono from 'chrono-node';
 import { DateTime } from 'luxon';
-import { RRule } from 'rrule';
+import rrulePkg from 'rrule';
+const { RRule } = rrulePkg;
 import { Clock, defaultClock } from '../lib/clock.js';
 
 export interface DateResolverInput {

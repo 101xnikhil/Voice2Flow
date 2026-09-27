@@ -34,6 +34,7 @@ export const commandRateLimiter = rateLimit({
   windowMs: 60 * 1000, // 1 minute
   max: 20,
   skip: () => process.env.NODE_ENV === 'test',
+  validate: { keyGeneratorIpFallback: false, ip: false },
   keyGenerator: (req: Request) => {
     const userReq = req as Request & { user?: { id: string } };
     return userReq.user?.id || req.ip || req.socket.remoteAddress || 'unknown';

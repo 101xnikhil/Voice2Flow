@@ -1,7 +1,8 @@
 import { CompleteTaskNodeParams } from '@voice2flow/shared';
 import { ActionContext, ActionResult } from './types.js';
 import { TaskStatus, Source } from '@prisma/client';
-import { rrulestr } from 'rrule';
+import rrulePkg from 'rrule';
+const { rrulestr } = rrulePkg;
 
 export async function executeCompleteTask(
   ctx: ActionContext,
