@@ -1,13 +1,18 @@
 import express, { Express, Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
+import cookieParser from 'cookie-parser';
 import { pinoHttp } from 'pino-http';
 import { env } from './config/env.js';
 import { logger } from './lib/logger.js';
 import { requestIdMiddleware } from './middleware/requestId.js';
 import { errorHandler } from './middleware/errorHandler.js';
+import { globalRateLimiter } from './middleware/rateLimit.js';
 import { AppError } from './lib/errors.js';
 import { healthRouter } from './modules/health/routes.js';
+import authRouter from './modules/auth/routes.js';
+import userRouter from './modules/users/routes.js';
+import taskRouter from './modules/tasks/routes.js';
 import { API_PREFIX } from '@voice2flow/shared';
 
 export function createApp(): Express {
@@ -26,9 +31,15 @@ export function createApp(): Express {
     })
   );
 
+  // Cookie parser
+  app.use(cookieParser());
+
   // Body parsing
   app.use(express.json({ limit: '1mb' }));
   app.use(express.urlencoded({ extended: true }));
+
+  // Global rate limiter
+  app.use(globalRateLimiter);
 
   // Request ID injection
   app.use(requestIdMiddleware);
@@ -55,6 +66,9 @@ export function createApp(): Express {
   // API v1 routes
   const apiRouter = express.Router();
   apiRouter.use('/', healthRouter);
+  apiRouter.use('/auth', authRouter);
+  apiRouter.use('/users', userRouter);
+  apiRouter.use('/tasks', taskRouter);
 
   app.use(API_PREFIX, apiRouter);
 

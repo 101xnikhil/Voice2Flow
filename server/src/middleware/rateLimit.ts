@@ -7,6 +7,7 @@ export const globalRateLimiter = rateLimit({
   max: 300,
   standardHeaders: true,
   legacyHeaders: false,
+  skip: () => process.env.NODE_ENV === 'test',
   handler: (_req: Request, _res: Response, next: NextFunction) => {
     next(AppError.rateLimited("You're going a little fast. Please slow down."));
   },
@@ -15,6 +16,7 @@ export const globalRateLimiter = rateLimit({
 export const authRateLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 10,
+  skip: () => process.env.NODE_ENV === 'test',
   keyGenerator: (req: Request) => {
     const ip = req.ip || req.socket.remoteAddress || 'unknown';
     const email = req.body && typeof req.body.email === 'string' ? req.body.email.toLowerCase() : '';
