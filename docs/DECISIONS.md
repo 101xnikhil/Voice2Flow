@@ -19,3 +19,11 @@ This document records resolved design decisions and choices made during implemen
 | 2026-09-27 | Strict multi-tenant isolation via 404 Not Found | All task queries scope `where: { id, userId }`; attempting to query, mutate, or delete another user's task returns standard 404 rather than 403 to prevent existence leakage. |
 | 2026-09-27 | Responsive AppShell with raised placeholder mic | Desktop full sidebar, tablet icon rail, mobile bottom nav with disabled raised mic placeholder ("Coming in the voice phase" per spec) to be enabled in Phase 3. |
 | 2026-09-27 | Optimistic task mutations with Sonner Undo toast | Completing, deleting, or restoring tasks immediately updates query cache with an interactive Undo toast that reverts the mutation. |
+| 2026-09-27 | Injectable Clock & deterministic time anchors | `Clock` interface with `defaultClock` and `FixedClock` allowing deterministic testing of chrono-node date parsing and luxon conversions. |
+| 2026-09-27 | Task resolver with Fuse.js & academic stopwords | Tuned Fuse.js thresholds (0.3 single, 0.55 ambiguous) preserving crucial task words like "assignment", "project", "lab", "exam". |
+| 2026-09-28 | ResilientAIService shell with Rules fallback | AI provider abstraction routes commands with timeout (default 8s) and cleanly falls back to deterministic RulesProvider with full diagnostic logging. |
+| 2026-09-28 | Single-Action workflow compiler (START -> ACTION -> END) | Deterministic 3-node graph representation executed sequentially by WorkflowEngine, ready for Phase 5 multi-step extensions. |
+| 2026-09-28 | Idempotent node execution with originKey | Node actions create records with `originKey = ${executionId}:${nodeId}` ensuring repeat execution in a transaction never produces duplicates. |
+| 2026-09-28 | Strict destructive action ALWAYS-confirm rule | Deletions and broad mutations always require explicit user confirmation with real count verification, even if `autoExecute: true`. |
+| 2026-09-28 | Preview concurrency & 10-minute expiry | Pending executions track `expiresAt` (10 min) and detect concurrent modifications via 409 Conflict. |
+

@@ -61,7 +61,7 @@ export class RulesProvider implements AIService {
     // Resolve date/time if present
     let resolved;
     if (entities.date || entities.time || entities.recurrence) {
-      resolved = resolveDate(
+      const dateRes = resolveDate(
         {
           date: entities.date,
           time: entities.time,
@@ -72,6 +72,13 @@ export class RulesProvider implements AIService {
         },
         defaultClock
       );
+      resolved = {
+        dueAt: dateRes.instant ?? null,
+        isAllDay: dateRes.isAllDay,
+        timezone: dateRes.timezone,
+        rrule: dateRes.rrule,
+        assumptions: dateRes.assumptions,
+      };
     }
 
     return {
