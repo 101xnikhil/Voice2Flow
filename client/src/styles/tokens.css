@@ -1,0 +1,68 @@
+:root {
+  /* Light Theme (Default) */
+  --bg: #F7F8FB;
+  --surface: #FFFFFF;
+  --surface-2: #F0F2F7;
+  --border: rgba(15, 23, 42, 0.08);
+  --text: #0F172A;
+  --text-muted: #5B6474;
+
+  /* Accent gradient */
+  --accent-from: #7C5CFF;
+  --accent-to: #22D3EE;
+
+  /* Status Colors (AA-safe dark variants for light mode) */
+  --success: #059669;
+  --warning: #D97706;
+  --danger: #DC2626;
+
+  /* Priority Colors */
+  --priority-low: #64748B;
+  --priority-medium: #2563EB;
+  --priority-high: #EA580C;
+  --priority-urgent: #DC2626;
+
+  /* Category Colors */
+  --category-academic: #7C3AED;
+  --category-personal: #0D9488;
+  --category-project: #4F46E5;
+  --category-work: #D97706;
+  --category-other: #64748B;
+
+  /* Radii */
+  --radius-card: 12px;
+  --radius-panel: 16px;
+  --radius-modal: 24px;
+}
+
+.dark {
+  /* Dark Theme */
+  --bg: #0B0D12;
+  --surface: #12151C;
+  --surface-2: #181C25;
+  --border: rgba(255, 255, 255, 0.08);
+  --text: #E8EAF0;
+  --text-muted: #9AA3B2;
+
+  /* Accent gradient */
+  --accent-from: #7C5CFF;
+  --accent-to: #22D3EE;
+
+  /* Status Colors (Vibrant variants for dark mode) */
+  --success: #34D399;
+  --warning: #FBBF24;
+  --danger: #F87171;
+
+  /* Priority Colors */
+  --priority-low: #94A3B8;
+  --priority-medium: #60A5FA;
+  --priority-high: #FB923C;
+  --priority-urgent: #F87171;
+
+  /* Category Colors */
+  --category-academic: #A78BFA;
+  --category-personal: #2DD4BF;
+  --category-project: #818CF8;
+  --category-work: #FBBF24;
+  --category-other: #94A3B8;
+}

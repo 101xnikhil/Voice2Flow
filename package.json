@@ -1,0 +1,42 @@
+{
+  "name": "voice2flow-root",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Voice2Flow — Natural language voice & text task orchestration",
+  "workspaces": [
+    "shared",
+    "server",
+    "client"
+  ],
+  "scripts": {
+    "dev": "concurrently -n \"SERVER,CLIENT\" -c \"blue,magenta\" \"npm run --workspace=server dev\" \"npm run --workspace=client dev\"",
+    "build": "npm run --workspace=shared build && npm run --workspace=server build && npm run --workspace=client build",
+    "start": "npm run --workspace=server start",
+    "test": "vitest run",
+    "lint": "eslint .",
+    "typecheck": "npm run --workspace=shared typecheck && npm run --workspace=server typecheck && npm run --workspace=client typecheck",
+    "check": "npm run typecheck && npm run lint && npm test && npm run build",
+    "db:migrate": "npm run --workspace=server db:migrate",
+    "db:seed": "npm run --workspace=server db:seed",
+    "db:reset": "npm run --workspace=server db:reset",
+    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,css,md}\""
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.20.0",
+    "concurrently": "^9.1.2",
+    "eslint": "^9.20.1",
+    "globals": "^15.15.0",
+    "prettier": "^3.5.1",
+    "typescript": "^5.7.3",
+    "typescript-eslint": "^8.24.1",
+    "vitest": "^3.0.6"
+  },
+  "allowScripts": {
+    "esbuild@0.25.12": true,
+    "esbuild@0.28.2": true,
+    "fsevents@2.3.3": true,
+    "@prisma/client@6.19.3": true,
+    "prisma@6.19.3": true,
+    "@prisma/engines@6.19.3": true
+  }
+}

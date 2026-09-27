@@ -1,0 +1,342 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Category {
+  ACADEMIC
+  PERSONAL
+  PROJECT
+  WORK
+  OTHER
+}
+
+enum Priority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+enum TaskStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+}
+
+enum Source {
+  MANUAL
+  VOICE
+  TEXT
+  WORKFLOW
+}
+
+enum ReminderType {
+  ONE_TIME
+  RECURRING
+  DEADLINE
+  WORKFLOW
+}
+
+enum ReminderStatus {
+  SCHEDULED
+  FIRED
+  CANCELLED
+}
+
+enum WorkflowStatus {
+  DRAFT
+  ACTIVE
+  ARCHIVED
+}
+
+enum ExecutionStatus {
+  AWAITING_CLARIFICATION
+  AWAITING_CONFIRMATION
+  RUNNING
+  WAITING
+  SUCCEEDED
+  FAILED
+  CANCELLED
+  EXPIRED
+}
+
+enum StepKind {
+  PIPELINE
+  NODE
+}
+
+enum StepStatus {
+  RUNNING
+  SUCCESS
+  FAILED
+  SKIPPED
+  WAITING
+}
+
+enum NotificationType {
+  REMINDER
+  WORKFLOW
+  TASK_DUE
+  SYSTEM
+}
+
+enum SessionStatus {
+  ACTIVE
+  COMPLETED
+  CANCELLED
+  EXPIRED
+}
+
+model User {
+  id           String    @id @default(uuid())
+  email        String    @unique
+  name         String
+  passwordHash String
+  timezone     String    @default("Asia/Kolkata")
+  lastLoginAt  DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  settings      UserSettings?
+  refreshTokens RefreshToken[]
+  tasks         Task[]
+  reminders     Reminder[]
+  workflows     Workflow[]
+  executions    WorkflowExecution[]
+  notifications Notification[]
+  conversations ConversationSession[]
+  activityLogs  ActivityLog[]
+
+  @@index([email])
+}
+
+model UserSettings {
+  id                       String   @id @default(uuid())
+  userId                   String   @unique
+  theme                    String   @default("system")
+  sttLocale                String   @default("en-IN")
+  autoExecute              Boolean  @default(true)
+  autoExecuteThreshold     Float    @default(0.85)
+  autoExecuteWorkflows     Boolean  @default(false)
+  showConfidence           Boolean  @default(true)
+  defaultReminderOffsetMin Int      @default(60)
+  weekStartsOn             Int      @default(1)
+  notifyBrowser            Boolean  @default(false)
+  notifyEmail              Boolean  @default(false)
+  createdAt                DateTime @default(now())
+  updatedAt                DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model RefreshToken {
+  id           String    @id @default(uuid())
+  userId       String
+  tokenHash    String    @unique
+  expiresAt    DateTime
+  revokedAt    DateTime?
+  replacedById String?
+  userAgent    String?
+  ip           String?
+  lastUsedAt   DateTime?
+  createdAt    DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([tokenHash])
+}
+
+model Task {
+  id                 String     @id @default(uuid())
+  userId             String
+  title              String
+  description        String?
+  category           Category   @default(OTHER)
+  priority           Priority   @default(MEDIUM)
+  status             TaskStatus @default(PENDING)
+  dueAt              DateTime?
+  isAllDay           Boolean    @default(false)
+  estimatedMinutes   Int?
+  personName         String?
+  location           String?
+  recurrenceRule     String?
+  recurrenceParentId String?
+  completedAt        DateTime?
+  deletedAt          DateTime?
+  source             Source     @default(MANUAL)
+  executionId        String?
+  originKey          String?    @unique
+  createdAt          DateTime   @default(now())
+  updatedAt          DateTime   @updatedAt
+
+  user           User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  parentTask     Task?      @relation("TaskRecurrence", fields: [recurrenceParentId], references: [id], onDelete: SetNull)
+  recurringTasks Task[]     @relation("TaskRecurrence")
+  reminders      Reminder[]
+
+  @@index([userId, status, dueAt])
+  @@index([userId, deletedAt])
+  @@index([userId, category])
+  @@index([userId, priority])
+  @@index([userId, completedAt])
+}
+
+model Reminder {
+  id             String         @id @default(uuid())
+  userId         String
+  taskId         String?
+  title          String
+  type           ReminderType   @default(DEADLINE)
+  status         ReminderStatus @default(SCHEDULED)
+  nextFireAt     DateTime
+  recurrenceRule String?
+  lastFiredAt    DateTime?
+  lockedAt       DateTime?
+  attempts       Int            @default(0)
+  executionId    String?
+  originKey      String?        @unique
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+
+  user User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  task Task? @relation(fields: [taskId], references: [id], onDelete: SetNull)
+
+  @@index([status, nextFireAt])
+  @@index([userId, nextFireAt])
+}
+
+model Workflow {
+  id            String         @id @default(uuid())
+  userId        String
+  name          String
+  description   String?
+  definition    Json
+  schemaVersion Int            @default(1)
+  status        WorkflowStatus @default(ACTIVE)
+  sourceText    String?
+  layout        Json?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  user       User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  executions WorkflowExecution[]
+
+  @@index([userId, status])
+}
+
+model WorkflowExecution {
+  id                 String          @id @default(uuid())
+  userId             String
+  workflowId         String?
+  origin             String          @default("COMMAND")
+  inputMode          String          @default("TEXT")
+  rawInput           String?
+  language           String?         @default("en")
+  parser             String          @default("RULES")
+  aiProvider         String?
+  promptVersion      String?
+  aiLatencyMs        Int?
+  confidence         Float?
+  parsed             Json?
+  definitionSnapshot Json?
+  context            Json?
+  status             ExecutionStatus @default(RUNNING)
+  currentNodeId      String?
+  resumeAt           DateTime?
+  lockedAt           DateTime?
+  error              Json?
+  sessionId          String?
+  startedAt          DateTime        @default(now())
+  finishedAt         DateTime?
+  expiresAt          DateTime?
+  createdAt          DateTime        @default(now())
+
+  user     User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  workflow Workflow?       @relation(fields: [workflowId], references: [id], onDelete: SetNull)
+  steps    ExecutionStep[]
+
+  @@index([userId, createdAt(sort: Desc)])
+  @@index([status, resumeAt])
+  @@index([userId, status])
+}
+
+model ExecutionStep {
+  id          String     @id @default(uuid())
+  executionId String
+  seq         Int
+  kind        StepKind   @default(NODE)
+  name        String
+  nodeId      String?
+  status      StepStatus @default(RUNNING)
+  message     String
+  detail      Json?
+  startedAt   DateTime   @default(now())
+  finishedAt  DateTime?
+  durationMs  Int?
+
+  execution WorkflowExecution @relation(fields: [executionId], references: [id], onDelete: Cascade)
+
+  @@index([executionId, seq])
+}
+
+model Notification {
+  id                String           @id @default(uuid())
+  userId            String
+  type              NotificationType @default(SYSTEM)
+  title             String
+  body              String
+  taskId            String?
+  reminderId        String?
+  executionId       String?
+  deliveredChannels String[]         @default([])
+  readAt            DateTime?
+  createdAt         DateTime         @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, readAt, createdAt(sort: Desc)])
+}
+
+model ConversationSession {
+  id             String        @id @default(uuid())
+  userId         String
+  status         SessionStatus @default(ACTIVE)
+  pendingIntent  String?
+  slots          Json?
+  missingSlots   Json?
+  candidateTasks Json?
+  turns          Json          @default("[]")
+  lastQuestion   String?
+  expiresAt      DateTime
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, status, expiresAt])
+}
+
+model ActivityLog {
+  id          String   @id @default(uuid())
+  userId      String
+  action      String
+  entityType  String
+  entityId    String
+  source      String   @default("SYSTEM")
+  executionId String?
+  before      Json?
+  after       Json?
+  ip          String?
+  createdAt   DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt(sort: Desc)])
+  @@index([entityType, entityId])
+}
