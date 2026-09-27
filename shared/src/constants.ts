@@ -18,3 +18,17 @@ export const REFRESH_TOKEN_EXPIRY_DAYS = 7;
 export const PASSWORD_REGEX = /^(?=.*[A-Za-z])(?=.*\d).{8,}$/;
 export const PASSWORD_POLICY_MESSAGE =
   'Password must be at least 8 characters long and include both letters and numbers.';
+
+export const CONFIDENCE_AUTO_EXECUTE = 0.85;
+export const CONFIDENCE_CONFIRM_MIN = 0.60;
+export const CONFIDENCE_ASSUMPTION_PENALTY = 0.05;
+export const CONFIDENCE_MAX_ASSUMPTION_PENALTY = 0.20;
+export const CONFIDENCE_FUZZY_MATCH_CAP = 0.70;
+
+export const CONFIDENCE_DECISIONS = [
+  'CLARIFY',
+  'ALWAYS_CONFIRM',
+  'PREVIEW_CONFIRM',
+  'EXECUTE_IMMEDIATELY',
+] as const;
+export type ConfidenceDecision = (typeof CONFIDENCE_DECISIONS)[number];
