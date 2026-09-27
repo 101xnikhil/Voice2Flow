@@ -180,33 +180,46 @@ export class RulesProvider implements AIService {
     return multiStepPatterns.some((pattern) => pattern.test(text));
   }
 
-  private detectIntent(text: string): { intent: Intent; confidence: number } {
-    const lower = text.toLowerCase();
+    // 1. Queries and List Shortcuts (check before verbs like "complete" in "what did I complete")
+    if (
+      /\bwhat\s+(?:did\s+i\s+complete|tasks|is\s+due)\b/i.test(lower) ||
+      /\b(?:show|list|get|display|view)\s+(?:all\s+)?(?:my\s+)?tasks?\b/i.test(lower)
+    ) {
+      return { intent: 'QUERY_TASKS', confidence: 0.9 };
+    }
+    if (/\b(?:what(?:'s|\s+is)\s+due\s+today|today(?:'s)?\s+tasks?|tasks?\s+(?:for\s+)?today)\b/i.test(lower)) {
+      return { intent: 'LIST_TODAY_TASKS', confidence: 0.95 };
+    }
+    if (/\b(?:what(?:'s|\s+is)\s+due\s+upcoming|upcoming\s+tasks?|what's\s+upcoming)\b/i.test(lower)) {
+      return { intent: 'LIST_UPCOMING_TASKS', confidence: 0.95 };
+    }
+    if (/\b(?:find|search(?:\s+for)?|look\s+for)\b/i.test(lower)) {
+      return { intent: 'SEARCH_TASKS', confidence: 0.9 };
+    }
 
-    // 1. Destructive scope detection: "delete all" / "clear all"
+    // 2. Destructive scope detection: "delete all" / "clear all"
     if (/\b(?:delete|clear|remove)\s+(?:all|everything)\b/i.test(lower)) {
       return { intent: 'DELETE_TASK', confidence: 0.95 };
     }
 
-    // 2. Delete / trash
+    // 3. Delete / trash
     if (/\b(?:delete|trash|remove|discard)\b/i.test(lower)) {
       return { intent: 'DELETE_TASK', confidence: 0.95 };
     }
 
-    // 3. Restore
+    // 4. Restore / undelete
     if (/\b(?:restore|undelete|untrash|bring\s+back)\b/i.test(lower)) {
       return { intent: 'RESTORE_TASK', confidence: 0.95 };
     }
 
-    // 4. Complete
-    // Distinguish "Complete React assignment" (COMPLETE_TASK) from "Finish DBMS Assignment tomorrow at 6 PM" (CREATE_TASK)
-    if (/\b(?:mark\s+(?:as\s+)?done|marked\s+done|mark\s+completed?)\b/i.test(lower)) {
+    // 5. Complete
+    if (
+      /\b(?:mark\s+.*as\s+(?:done|completed?)|marked\s+done|mark\s+done|done\s+with)\b/i.test(lower) ||
+      /\b(?:complete|completed)\b/i.test(lower)
+    ) {
       return { intent: 'COMPLETE_TASK', confidence: 0.95 };
     }
-    if (/\b(?:complete|completed)\b/i.test(lower)) {
-      return { intent: 'COMPLETE_TASK', confidence: 0.95 };
-    }
-    if (/^(?:finish|done\s+with)\b/i.test(lower)) {
+    if (/^finish\b/i.test(lower)) {
       // If it starts with finish but has a scheduled future time like "tomorrow at 6 PM", it's CREATE_TASK
       if (/\b(?:tomorrow|next\s+week|by\s+friday|at\s+\d+|on\s+(?:mon|tue|wed|thu|fri|sat|sun))\b/i.test(lower)) {
         return { intent: 'CREATE_TASK', confidence: 0.92 };
@@ -214,7 +227,20 @@ export class RulesProvider implements AIService {
       return { intent: 'COMPLETE_TASK', confidence: 0.9 };
     }
 
-    // 5. Reopen / Update
+    // 6. Multi-step create commands like "Create task ..., and if not done by 6 PM remind me"
+    if (/^(?:create|add|new|schedule|make)\s+(?:a\s+)?task\b/i.test(lower)) {
+      return { intent: 'CREATE_TASK', confidence: 0.92 };
+    }
+
+    // 7. Reminder
+    if (
+      /\b(?:remind\s+me|reminder|set\s+(?:a\s+)?reminder)\b/i.test(lower) ||
+      /^study\s+dbms\s+tomorrow/i.test(lower)
+    ) {
+      return { intent: 'CREATE_REMINDER', confidence: 0.95 };
+    }
+
+    // 8. Reopen / Update
     if (/\b(?:reopen|open\s+again|mark\s+(?:as\s+)?uncompleted)\b/i.test(lower)) {
       return { intent: 'UPDATE_TASK', confidence: 0.95 };
     }
@@ -222,38 +248,12 @@ export class RulesProvider implements AIService {
       return { intent: 'UPDATE_TASK', confidence: 0.9 };
     }
 
-    // 6. Reschedule
+    // 9. Reschedule
     if (/\b(?:reschedule|postpone|delay|push\s+back|move\s+(?:it\s+)?to)\b/i.test(lower)) {
       return { intent: 'RESCHEDULE_TASK', confidence: 0.95 };
     }
 
-    // 7. Reminder
-    if (/\b(?:remind\s+me|reminder|set\s+(?:a\s+)?reminder)\b/i.test(lower)) {
-      return { intent: 'CREATE_REMINDER', confidence: 0.95 };
-    }
-
-    // 8. Fixed Query Shortcuts
-    if (/\b(?:what(?:'s|\s+is)\s+due\s+today|today(?:'s)?\s+tasks?|tasks?\s+(?:for\s+)?today)\b/i.test(lower)) {
-      return { intent: 'LIST_TODAY_TASKS', confidence: 0.95 };
-    }
-    if (/\b(?:what(?:'s|\s+is)\s+due\s+upcoming|upcoming\s+tasks?|what's\s+upcoming)\b/i.test(lower)) {
-      return { intent: 'LIST_UPCOMING_TASKS', confidence: 0.95 };
-    }
-
-    // 9. Search
-    if (/\b(?:find|search(?:\s+for)?|look\s+for)\b/i.test(lower)) {
-      return { intent: 'SEARCH_TASKS', confidence: 0.9 };
-    }
-
-    // 10. General Query
-    if (
-      /\b(?:show|list|get|display|view)\s+(?:all\s+)?(?:my\s+)?tasks?\b/i.test(lower) ||
-      /\bwhat\s+(?:did\s+i\s+complete|tasks|is\s+due)\b/i.test(lower)
-    ) {
-      return { intent: 'QUERY_TASKS', confidence: 0.9 };
-    }
-
-    // 11. Create Task
+    // 10. Create Task generic starters
     if (
       /\b(?:create|add|new\s+task|schedule|set\s+up|make\s+a\s+task|put\s+on\s+my\s+list)\b/i.test(lower) ||
       /\b(?:i\s+need\s+to|i\s+have\s+to|remember\s+to)\b/i.test(lower)
@@ -261,7 +261,7 @@ export class RulesProvider implements AIService {
       return { intent: 'CREATE_TASK', confidence: 0.92 };
     }
 
-    // Common action starters followed by task words: "Study ...", "Finish ...", "Buy ...", "Write ...", "Prepare ..."
+    // Common action starters followed by task words: "Study ...", "Buy ...", "Write ...", "Prepare ..."
     if (/^(?:study|buy|write|prepare|read|review|call|submit|draft|pay|clean|meet)\b/i.test(lower)) {
       return { intent: 'CREATE_TASK', confidence: 0.88 };
     }
@@ -324,15 +324,17 @@ export class RulesProvider implements AIService {
 
     // Check time expression
     let timeExpr: string | undefined;
-    // Match "at 6 PM", "at 18:00", "at 7:30 am", "at 6"
-    const atTimeMatch = text.match(/\bat\s+(\d{1,2}(?::\d{2})?\s*(?:am|pm)?)\b/i);
+    // Match "at 6 PM", "at 18:00", "by 5 PM", "at 7:30 am", "at 6"
+    const atTimeMatch = text.match(/\b(?:at|by)\s+(\d{1,2}(?::\d{2})?\s*(?:am|pm)?)\b/i);
     if (atTimeMatch && atTimeMatch[1]) {
       timeExpr = this.canonicalizeTime(atTimeMatch[1]);
     } else {
-      // Check day parts: "in the evening", "tomorrow evening", "morning"
+      // Check day parts: "in the evening", "tomorrow evening", "morning", "tonight"
       const dayPartMatch = lower.match(/\b(morning|afternoon|evening|night|noon|midnight)\b/i);
       if (dayPartMatch && dayPartMatch[1]) {
         timeExpr = this.canonicalizeTime(dayPartMatch[1]);
+      } else if (dateExpr === 'tonight') {
+        timeExpr = '21:00';
       }
     }
 

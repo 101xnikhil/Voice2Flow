@@ -1,0 +1,350 @@
+[
+  {
+    "input": "Finish DBMS Assignment tomorrow at 6 PM",
+    "expectedIntent": "CREATE_TASK",
+    "expectedEntities": {
+      "title": "Finish DBMS Assignment",
+      "category": "ACADEMIC",
+      "priority": "HIGH",
+      "date": "tomorrow",
+      "time": "18:00"
+    }
+  },
+  {
+    "input": "Complete React assignment",
+    "expectedIntent": "COMPLETE_TASK",
+    "expectedEntities": {
+      "taskQuery": "React assignment"
+    }
+  },
+  {
+    "input": "Study DBMS tomorrow at 7 PM for 2 hours",
+    "expectedIntent": "CREATE_REMINDER",
+    "expectedEntities": {
+      "title": "Study DBMS",
+      "category": "ACADEMIC",
+      "date": "tomorrow",
+      "time": "19:00",
+      "duration": "PT2H"
+    }
+  },
+  {
+    "input": "Create a high priority task to finish my DBMS assignment tomorrow at 6 PM",
+    "expectedIntent": "CREATE_TASK",
+    "expectedEntities": {
+      "title": "Finish DBMS Assignment",
+      "category": "ACADEMIC",
+      "priority": "HIGH",
+      "date": "tomorrow",
+      "time": "18:00"
+    }
+  },
+  {
+    "input": "Create a task for Math quiz on Friday with urgent priority",
+    "expectedIntent": "CREATE_TASK",
+    "expectedEntities": {
+      "title": "Math Quiz",
+      "category": "ACADEMIC",
+      "priority": "URGENT",
+      "date": "friday"
+    }
+  },
+  {
+    "input": "Add a task to buy groceries tomorrow morning",
+    "expectedIntent": "CREATE_TASK",
+    "expectedEntities": {
+      "title": "Buy Groceries",
+      "category": "PERSONAL",
+      "date": "tomorrow",
+      "time": "09:00"
+    }
+  },
+  {
+    "input": "Schedule a meeting with client on Monday at 3 PM",
+    "expectedIntent": "CREATE_TASK",
+    "expectedEntities": {
+      "title": "Meeting With Client",
+      "category": "WORK",
+      "date": "monday",
+      "time": "15:00"
+    }
+  },
+  {
+    "input": "Remember to call mom tonight",
+    "expectedIntent": "CREATE_TASK",
+    "expectedEntities": {
+      "title": "Call Mom",
+      "category": "PERSONAL",
+      "date": "tonight",
+      "time": "21:00"
+    }
+  },
+  {
+    "input": "Add a new task deploy docker container tomorrow at 4 PM",
+    "expectedIntent": "CREATE_TASK",
+    "expectedEntities": {
+      "title": "Deploy Docker Container",
+      "category": "PROJECT",
+      "date": "tomorrow",
+      "time": "16:00"
+    }
+  },
+  {
+    "input": "Submit expense report by Friday 5 PM",
+    "expectedIntent": "CREATE_TASK",
+    "expectedEntities": {
+      "title": "Submit Expense Report",
+      "category": "WORK",
+      "date": "friday",
+      "time": "17:00"
+    }
+  },
+  {
+    "input": "Prepare presentation for sprint review on Thursday",
+    "expectedIntent": "CREATE_TASK",
+    "expectedEntities": {
+      "title": "Prepare Presentation for Sprint Review",
+      "category": "PROJECT",
+      "date": "thursday"
+    }
+  },
+  {
+    "input": "Buy medicine from pharmacy today",
+    "expectedIntent": "CREATE_TASK",
+    "expectedEntities": {
+      "title": "Buy Medicine from Pharmacy",
+      "category": "PERSONAL",
+      "date": "today"
+    }
+  },
+  {
+    "input": "Create task study for operating systems exam next week",
+    "expectedIntent": "CREATE_TASK",
+    "expectedEntities": {
+      "title": "Study for Operating Systems Exam",
+      "category": "ACADEMIC"
+    }
+  },
+  {
+    "input": "Schedule workout at gym every monday at 7 AM",
+    "expectedIntent": "CREATE_TASK",
+    "expectedEntities": {
+      "title": "Workout at Gym",
+      "category": "PERSONAL",
+      "recurrence": "every monday",
+      "time": "07:00"
+    }
+  },
+  {
+    "input": "Mark DBMS assignment as done",
+    "expectedIntent": "COMPLETE_TASK",
+    "expectedEntities": {
+      "taskQuery": "DBMS assignment"
+    }
+  },
+  {
+    "input": "Finish operating systems homework",
+    "expectedIntent": "COMPLETE_TASK",
+    "expectedEntities": {
+      "taskQuery": "operating systems homework"
+    }
+  },
+  {
+    "input": "Done with groceries task",
+    "expectedIntent": "COMPLETE_TASK",
+    "expectedEntities": {
+      "taskQuery": "groceries task"
+    }
+  },
+  {
+    "input": "Mark as completed client proposal",
+    "expectedIntent": "COMPLETE_TASK",
+    "expectedEntities": {
+      "taskQuery": "client proposal"
+    }
+  },
+  {
+    "input": "Complete sprint retrospective notes",
+    "expectedIntent": "COMPLETE_TASK",
+    "expectedEntities": {
+      "taskQuery": "sprint retrospective notes"
+    }
+  },
+  {
+    "input": "Delete my old grocery task",
+    "expectedIntent": "DELETE_TASK",
+    "expectedEntities": {
+      "taskQuery": "old grocery task"
+    }
+  },
+  {
+    "input": "Trash the draft report",
+    "expectedIntent": "DELETE_TASK",
+    "expectedEntities": {
+      "taskQuery": "draft report"
+    }
+  },
+  {
+    "input": "Remove client meeting",
+    "expectedIntent": "DELETE_TASK",
+    "expectedEntities": {
+      "taskQuery": "client meeting"
+    }
+  },
+  {
+    "input": "Delete all my tasks",
+    "expectedIntent": "DELETE_TASK",
+    "expectedEntities": {
+      "scope": "ALL"
+    }
+  },
+  {
+    "input": "Clear all tasks",
+    "expectedIntent": "DELETE_TASK",
+    "expectedEntities": {
+      "scope": "ALL"
+    }
+  },
+  {
+    "input": "Delete everything",
+    "expectedIntent": "DELETE_TASK",
+    "expectedEntities": {
+      "scope": "ALL"
+    }
+  },
+  {
+    "input": "Remind me to call the doctor tomorrow at 10 AM",
+    "expectedIntent": "CREATE_REMINDER",
+    "expectedEntities": {
+      "title": "Call the Doctor",
+      "category": "PERSONAL",
+      "date": "tomorrow",
+      "time": "10:00"
+    }
+  },
+  {
+    "input": "Set a reminder for team standup on Monday at 9 AM",
+    "expectedIntent": "CREATE_REMINDER",
+    "expectedEntities": {
+      "title": "Team Standup",
+      "category": "WORK",
+      "date": "monday",
+      "time": "09:00"
+    }
+  },
+  {
+    "input": "Set reminder to revise DSA for 1 hour tonight",
+    "expectedIntent": "CREATE_REMINDER",
+    "expectedEntities": {
+      "title": "Revise DSA",
+      "date": "tonight",
+      "duration": "PT1H"
+    }
+  },
+  {
+    "input": "Reschedule math quiz to Friday at 3 PM",
+    "expectedIntent": "RESCHEDULE_TASK",
+    "expectedEntities": {
+      "taskQuery": "math quiz",
+      "date": "friday",
+      "time": "15:00"
+    }
+  },
+  {
+    "input": "Postpone DBMS presentation to next Monday",
+    "expectedIntent": "RESCHEDULE_TASK",
+    "expectedEntities": {
+      "taskQuery": "DBMS presentation",
+      "date": "next monday"
+    }
+  },
+  {
+    "input": "Delay client sync to tomorrow at 4 PM",
+    "expectedIntent": "RESCHEDULE_TASK",
+    "expectedEntities": {
+      "taskQuery": "client sync",
+      "date": "tomorrow",
+      "time": "16:00"
+    }
+  },
+  {
+    "input": "Reopen finished lab report",
+    "expectedIntent": "UPDATE_TASK",
+    "expectedEntities": {
+      "taskQuery": "finished lab report"
+    }
+  },
+  {
+    "input": "Restore my deleted assignment",
+    "expectedIntent": "RESTORE_TASK",
+    "expectedEntities": {
+      "taskQuery": "deleted assignment"
+    }
+  },
+  {
+    "input": "Undelete groceries",
+    "expectedIntent": "RESTORE_TASK",
+    "expectedEntities": {
+      "taskQuery": "groceries"
+    }
+  },
+  {
+    "input": "What's due today?",
+    "expectedIntent": "LIST_TODAY_TASKS",
+    "expectedEntities": {}
+  },
+  {
+    "input": "Show my tasks for today",
+    "expectedIntent": "LIST_TODAY_TASKS",
+    "expectedEntities": {}
+  },
+  {
+    "input": "What is due upcoming?",
+    "expectedIntent": "LIST_UPCOMING_TASKS",
+    "expectedEntities": {}
+  },
+  {
+    "input": "List my upcoming tasks",
+    "expectedIntent": "LIST_UPCOMING_TASKS",
+    "expectedEntities": {}
+  },
+  {
+    "input": "Find my DBMS notes",
+    "expectedIntent": "SEARCH_TASKS",
+    "expectedEntities": {}
+  },
+  {
+    "input": "Search for react components",
+    "expectedIntent": "SEARCH_TASKS",
+    "expectedEntities": {}
+  },
+  {
+    "input": "Show all my tasks",
+    "expectedIntent": "QUERY_TASKS",
+    "expectedEntities": {}
+  },
+  {
+    "input": "What did I complete yesterday?",
+    "expectedIntent": "QUERY_TASKS",
+    "expectedEntities": {}
+  },
+  {
+    "input": "asdfghjk qwerty",
+    "expectedIntent": "UNKNOWN",
+    "expectedEntities": {}
+  },
+  {
+    "input": "hello there assistant",
+    "expectedIntent": "UNKNOWN",
+    "expectedEntities": {}
+  },
+  {
+    "input": "Create task finish project report, and if not done by 6 PM remind me",
+    "expectedIntent": "CREATE_TASK",
+    "expectedMultiStep": true,
+    "expectedEntities": {
+      "title": "Finish Project Report",
+      "category": "PROJECT"
+    }
+  }
+]
